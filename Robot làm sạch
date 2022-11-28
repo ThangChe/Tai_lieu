@@ -1,0 +1,204 @@
+package Cleaning_Robot;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Solution {
+	static int n, m, cost, maxcost, vitrihang, vitricot, soVetBan;
+	static int[][] mang, dem, check, mangVetBan, khoangCach;
+	static int[] dx = { -1, 0, 1, 0 }, dy = { 0, 1, 0, -1 };
+	static int[] Qx, Qy, visited;
+	static int f = -1, r = -1;
+
+	public static void Push(int x, int y) {
+		f++;
+		Qx[f] = x;
+		Qy[f] = y;
+	}
+
+	public static void Pop(int[] tmp) {
+		r++;
+		tmp[0] = Qx[r];
+		tmp[1] = Qy[r];
+	}
+
+	public static int BFS(int x, int y, int xD, int yD) {
+		check[x][y] = 1;
+		Push(x, y);
+		while (f != r) {
+			int[] tmp = new int[2];
+			Pop(tmp);
+			int a = tmp[0];
+			int b = tmp[1];
+			for (int i = 0; i < 4; i++) {
+				int aa = a + dx[i];
+				int bb = b + dy[i];
+				if (aa == xD && bb == yD) {
+					return (dem[a][b] + 1);
+				}
+				if (aa >= 0 && aa < n && bb >= 0 && bb < m && check[aa][bb] == 0 && mang[aa][bb] != 2) {
+					check[aa][bb] = 1;
+					Push(aa, bb);
+					dem[aa][bb] = dem[a][b] + 1;
+				}
+			}
+		}
+		return -1;
+	}
+
+	public static void main(String[] args) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		System.setIn(new FileInputStream("Cleaning_Robot.txt"));
+		Scanner sc = new Scanner(System.in);
+		int sbt = sc.nextInt();
+		for (int tc = 1; tc <= sbt; tc++) {
+			n = sc.nextInt();
+			m = sc.nextInt();
+			vitrihang = 0;
+			vitricot = 0;
+			soVetBan = 0;
+			mangVetBan = new int[12][2];
+			mang = new int[n + 1][m + 1];
+			visited = new int[12];
+
+			init();
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					mang[i][j] = sc.nextInt();
+					if (mang[i][j] == 3) {
+						vitrihang = i;
+						vitricot = j;
+						mangVetBan[soVetBan][0] = i;
+						mangVetBan[soVetBan][1] = j;
+						soVetBan++;
+					}
+					if (mang[i][j] == 1) {
+						mangVetBan[soVetBan][0] = i;
+						mangVetBan[soVetBan][1] = j;
+						soVetBan++;
+					}
+				}
+			}
+			khoangCach = new int[soVetBan + 1][soVetBan + 1];
+			for (int i = 0; i < soVetBan - 1; i++) {
+				for (int j = i + 1; j < soVetBan; j++) {
+					init();
+					int test = BFS(mangVetBan[i][0], mangVetBan[i][1], mangVetBan[j][0], mangVetBan[j][1]);
+					khoangCach[i][j] = test;
+					khoangCach[j][i] = test;
+				}
+			}
+			cost = 0;
+			maxcost = 9999999;
+			run(0);
+			System.out.println("Case #" + tc + " ");
+			if (maxcost == 9999999) {
+				System.out.println(-1);
+			} else {
+				System.out.println(maxcost);
+			}
+
+//			 for(int i =0;i<soVetBan;i++){
+//			 for(int j=0;j<soVetBan;j++){
+//			 System.out.print(khoangCach[i][j] +" ");
+//			 }
+//			 System.out.println();
+//			 }
+		}
+	}
+
+	private static void run(int chiso) {
+		// TODO Auto-generated method stub
+		visited[chiso] = 1;
+		if (cost > maxcost)
+			return;
+		if (checkMangVisited(visited) == true) {
+			if (cost < maxcost)
+				maxcost = cost;
+			return;
+		}
+//		for (int i = 0; i < soVetBan; i++) {
+//			if (visited[i] == 0) {
+//				if (khoangCach[chiso][i] != 0) {
+//					cost += khoangCach[chiso][i];
+//					visited[i] = 1;
+//					run(i);
+//					visited[i] = 0;
+//					cost -= khoangCach[chiso][i];
+//				}
+//			}
+//		}
+		for(int i=0;i<soVetBan;i++){
+			if(khoangCach[chiso][i] != 0){
+				if(visited[i] == 0){
+					cost += khoangCach[chiso][i];
+					visited[i] = 1;
+					run(i);
+					visited[i] = 0;
+					cost -= khoangCach[chiso][i];
+				}
+			}
+		}
+	}
+
+	private static boolean checkMangVisited(int[] a) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < soVetBan; i++) {
+			if (a[i] == 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	private static void init() {
+		dem = new int[n + 1][m + 1];
+		check = new int[n + 1][m + 1];
+		f = -1;
+		r = -1;
+		Qx = new int[100000000];
+		Qy = new int[100000000];
+	}
+
+}
+
+Input
+
+5
+
+5 7
+
+0 0 0 0 0 0 0
+
+0 3 0 0 0 1 0
+
+0 0 0 0 0 0 0
+
+0 1 0 0 0 1 0
+
+0 0 0 0 0 0 0
+
+5 15
+
+0 0 0 0 2 0 2 0 0 0 0 1 2 0 1
+
+0 0 0 1 0 2 0 2 2 0 1 2 0 0 0
+
+2 1 0 2 0 1 0 2 0 0 0 0 0 0 0
+
+0 0 0 1 0 2 0 0 1 2 0 0 2 0 0
+
+0 2 1 0 2 0 0 0 0 0 3 0 0 0 0
+
+...............
+
+Output
+
+Case #1
+
+8
+
+Case #2
+
+38
