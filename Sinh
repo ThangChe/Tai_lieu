@@ -1,0 +1,87 @@
+package Sinh_hoanvi;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Solution {
+	static int mang[];
+	static int ketqua[] = new int[6];
+	static boolean visted[] = new boolean[6];
+	static int dem = 0;
+
+	public static void main(String[] args) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		System.setIn(new FileInputStream("Sinh_hoanvi.txt"));
+		Scanner sc = new Scanner(System.in);
+		mang = new int[6];
+		for (int i = 0; i < 6; i++) {
+			mang[i] = sc.nextInt();
+			// System.out.println(mang[i]);
+
+		}
+		// Sinhhoanvi(0);
+		Sinhtohop(0, 3, 6, 0);
+//		System.out.println("dem = " + dem);
+		//Subset(0,10);
+
+	}
+
+	// && ketqua[i]<mang[j]
+	private static void Sinhtohop(int i, int k, int n, int start) {
+		// TODO Auto-generated method stub
+		if (i == k) {
+			dem++;
+			in(k);
+		} else {
+			for (int j = start; j < 6; j++) {
+				if (visted[j] == false) {
+					ketqua[i] = mang[j];
+					visted[j] = true;
+					Sinhtohop(i + 1, k, n, j);
+					visted[j] = false;
+
+				}
+			}
+		}
+	}
+
+	// Sinh tập con có tổng bằng 0
+	public static void Subset(int i, int sum) {
+		if (i == 6)
+			return;
+		if (sum == 0) {
+			in(6);
+		}
+		visted[i] = true;
+		Subset(i + 1, sum + mang[i]);
+		visted[i] = false;
+		Subset(i + 1, sum);
+
+	}
+
+	private static void Sinhhoanvi(int i) {
+		// TODO Auto-generated method stub
+		if (i == 6)
+			in(6);
+		else {
+			for (int j = 0; j < 6; j++) {
+				if (visted[j] == false) {
+					ketqua[i] = mang[j];
+					visted[j] = true;
+					Sinhhoanvi(i + 1);
+					visted[j] = false;
+				}
+			}
+		}
+	}
+
+	private static void in(int k) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < k; i++) {
+			System.out.print(ketqua[i] + " ");
+		}
+		System.out.println();
+	}
+
+}
