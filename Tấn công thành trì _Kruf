@@ -1,0 +1,170 @@
+package Tan_Cong_Thanh_Tri;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Krul {
+	static int n, soThanhTri;
+	static int[] mangCha, soMay;
+	static int[][] dsCanh;
+	static boolean[][] check;
+
+	public static void Make_Set(int i) {
+		mangCha[i] = i;
+	}
+
+	public static int Find_Set(int i) {
+		if (mangCha[i] == i)
+			return i;
+		return Find_Set(mangCha[i]);
+	}
+
+	public static void Union_Set(int i, int j) {
+		int x = Find_Set(i);
+		int y = Find_Set(j);
+		mangCha[x] = y;
+	}
+
+	public static void main(String[] args) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		System.setIn(new FileInputStream("Tan_Cong_Thanh_Tri.txt"));
+		Scanner sc = new Scanner(System.in);
+		int sbt = sc.nextInt();
+		for (int tc = 1; tc <= sbt; tc++) {
+			soThanhTri = sc.nextInt();
+			mangCha = new int[10000];
+			soMay = new int[10000];
+			dsCanh = new int[10000][3];
+			check= new boolean[10000][3];
+			int x = 0, y = 0;
+			for (int i = 0; i < soThanhTri; i++) {
+				Make_Set(i);
+				int tmp1 = sc.nextInt();// thứ tư thành trì
+				soMay[i] = sc.nextInt(); // số máy
+				int tmp3 = sc.nextInt(); // số liên kết
+				for (int j = 0; j < tmp3; j++) {
+					int tmp4 = sc.nextInt();
+					if (tmp4 > tmp1) {
+						dsCanh[x][0] = tmp1;
+						dsCanh[x][1] = tmp4;
+						x++;
+					}
+				}
+
+			}
+			for (int i = 0; i < x; i++) {
+				dsCanh[i][2] = soMay[dsCanh[i][0]] + soMay[dsCanh[i][1]];
+			}
+			// Sắp xếp dsCanh
+			for (int i = 0; i < x - 1; i++) {
+				for (int j = i + 1; j < x; j++) {
+					if (dsCanh[j][2] > dsCanh[i][2]) {
+						int tmp1 = dsCanh[j][2];
+						int tmp2 = dsCanh[j][1];
+						int tmp3 = dsCanh[j][0];
+						dsCanh[j][2] = dsCanh[i][2];
+						dsCanh[j][1] = dsCanh[i][1];
+						dsCanh[j][0] = dsCanh[i][0];
+						dsCanh[i][2] = tmp1;
+						dsCanh[i][1] = tmp2;
+						dsCanh[i][0] = tmp3;
+
+					}
+				}
+			}
+			int res = 0;
+			for (int i = 0; i < x; i++) {
+				if (Find_Set(dsCanh[i][0]) != Find_Set(dsCanh[i][1]) && check[i][0] == false && check[i][1]==false) {
+					Union_Set(dsCanh[i][0], dsCanh[i][1]);
+				} else if (Find_Set(dsCanh[i][0]) == Find_Set(dsCanh[i][1])) {
+					int t1 = dsCanh[i][2];
+					check[i][0] = true;
+					check[i][1] = true;
+					res += t1;
+				}
+			}
+			System.out.println("Case #" + tc + " ");
+			System.out.println(res);
+		}
+
+	}
+
+}
+//3
+//
+//3
+//
+//0 1 2
+//
+//1 2
+//
+//1 2 2
+//
+//0 2
+//
+//2 3 2
+//
+//0 1
+//
+//7
+//
+//0 1 2
+//
+//2 3
+//
+//1 2 2
+//
+//3 4
+//
+//2 3 2
+//
+//0 5
+//
+//3 1 4
+//
+//0 1 5 6
+//
+//4 2 2
+//
+//1 6
+//
+//5 3 2
+//
+//2 3
+//
+//6 1 2
+//
+//3 4
+//
+//4
+//
+//0 1 2
+//
+//1 2
+//
+//1 8 2
+//
+//0 3
+//
+//2 16 2
+//
+//0 3
+//
+//3 12 2
+//
+//1 2
+//
+//Output
+//
+//Case #1
+//
+//3
+//
+//Case #2
+//
+//4
+//
+//Case #3
+//
+//9
